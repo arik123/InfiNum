@@ -20,7 +20,10 @@ public:
 
 	InfiNum(size_t size = 8);
 	
-	InfiNum(InfiNum& src);
+	InfiNum(const InfiNum& src); //Copy constructor
+	InfiNum& operator=(const InfiNum& src); //Copy assignment
+	InfiNum(InfiNum&& src) noexcept; //Move constructor
+	InfiNum& operator=(InfiNum&& src) noexcept; //Move assignment
 
 	~InfiNum();
 

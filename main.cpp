@@ -16,5 +16,6 @@ int main() {
 	num.mul((uint8_t*)&multiplier, 2);
 	InfiNum num2;
 	num2.fromString("100", 5);
+	InfiNum num3 = num2 + num;
 	return 0;
 }

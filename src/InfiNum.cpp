@@ -14,7 +14,7 @@ void InfiNum::upSize(size_t minLen, bool copy, bool destruct)
 {
 	auto oldData = this->data;
 	if (minLen > this->capacity || (copy && destruct)) {
-		this->capacity += std::max(this->capacity / 2, minLen - this->capacity);
+		this->capacity += std::max((this->capacity+1)/2, minLen - this->capacity);
 	}
 	this->data = new uint8_t[this->capacity];
 	if (!copy) this->size = 0;
@@ -56,18 +56,51 @@ bool InfiNum::fromString(const char * input, uint8_t sustava)
 	return true;
 }
 
-InfiNum::InfiNum(InfiNum& src) //Copy constructor
+InfiNum::InfiNum(const InfiNum& src) //Copy constructor
 {
-	printf("copy initiated");
+	printf("copy initiated\n");
 	this->data = src.data;
 	this->capacity = 0; //will be changed in upSize
 	this->size = src.size;
 	this->upSize(src.size, true, false); // will copy and resize without dedleting src data
 }
 
+InfiNum& InfiNum::operator=(const InfiNum& src) //Copy operator
+{
+	printf("copy assignment initiated\n");
+	this->data = src.data;
+	this->capacity = 0;
+	this->size = src.size;
+	this->upSize(src.size, true, false);
+	return *this;
+}
+
+InfiNum::InfiNum(InfiNum&& src) noexcept //Move constructor
+{
+	printf("move initiated\n");
+	this->data = src.data;
+	src.data = nullptr;
+	this->capacity = src.capacity;
+	src.capacity = 0;
+	this->size = src.size;
+	src.size = 0;
+}
+
+InfiNum& InfiNum::operator=(InfiNum&& src) noexcept //Move operator
+{
+	printf("move assignment initiated\n");
+	this->data = src.data;
+	src.data = nullptr;
+	this->capacity = src.capacity;
+	src.capacity = 0;
+	this->size = src.size;
+	src.size = 0;
+	return *this;
+}
+
 InfiNum::~InfiNum()
 {
-	delete[] this->data;
+	if(this->data != nullptr) delete[] this->data;
 }
 
 void InfiNum::add(uint8_t a, size_t i) {
@@ -91,7 +124,7 @@ InfiNum InfiNum::operator+(InfiNum& a)
 {
 	InfiNum res(*this);
 	res.add(a.data, a.size);
-	return res;
+	return res; //TODO: do not copy on return
 }
 
 InfiNum InfiNum::operator+(uint8_t a)
