@@ -19,6 +19,6 @@ include_directories("include")
 
 add_executable(Runner "main.cpp")
 
-add_library(InfiNum "src/InfiNum.cpp")
+add_library(InfiNum "src/InfiNum.cpp" "src/add.cpp" "src/multiply.cpp" "src/subtract.cpp")
 
 target_link_libraries(Runner InfiNum)
