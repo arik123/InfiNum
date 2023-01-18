@@ -3,8 +3,11 @@
 
 #include <cstdint>
 
+const uint8_t bits = sizeof(size_t) * 8;
+
+
 class InfiNum {
-	uint8_t * data;
+	size_t * data;
 	size_t size;
 	size_t capacity;
 	void upSize();
@@ -21,18 +24,18 @@ public:
 	~InfiNum();
 
 
-	void add(uint8_t a, size_t start = 0);
-	void add(const uint8_t* data, const size_t size, size_t start = 0);
+	void add(size_t a, size_t start = 0);
+	void add(const size_t* data, const size_t size, size_t start = 0);
 
-	InfiNum operator+(uint8_t a);
+	InfiNum operator+(size_t a);
 	InfiNum operator+(InfiNum& a);
 
-	void mul(uint8_t a);
-	void mul(const uint8_t* data, const size_t size);
+	void mul(size_t a);
+	void mul(const size_t* data, const size_t size);
 
 	InfiNum operator*(InfiNum& a);
 
-	InfiNum operator*(uint8_t a);
+	InfiNum operator*(size_t a);
 
 	bool fromString(const char* input, uint8_t sustava = 10);
 
@@ -42,8 +45,9 @@ public:
 
 	InfiNum operator-(InfiNum& a);
 
-	InfiNum operator<<(uint8_t);
+	InfiNum operator<<(const size_t a) const;//binary shift
 
+	InfiNum operator>>(const size_t a) const;//binary shift
 
 	InfiNum operator/(InfiNum& a);
 };

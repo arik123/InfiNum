@@ -1,6 +1,7 @@
 #include "InfiNum.h"
+#include <string.h>
 
-void InfiNum::mul(uint8_t a) {
+void InfiNum::mul(size_t a) {
 	if (a == 0) {
 		this->size = 0;
 		memset(this->data, 0, this->capacity);
@@ -9,7 +10,7 @@ void InfiNum::mul(uint8_t a) {
 		return;
 	}
 	size_t oldSize = this->size;
-	uint8_t* const tempData = new uint8_t[oldSize + 1];
+	size_t* const tempData = new size_t[oldSize + 1];
 	memcpy(tempData, this->data, oldSize);
 	tempData[oldSize++] = 0;
 	this->upSize(this->capacity, false, true);
@@ -21,7 +22,7 @@ void InfiNum::mul(uint8_t a) {
 		if (a == 0) break;
 		uint8_t lastBit = 0;
 		for (int i = 0; i < oldSize; i++) {
-			uint8_t newBit = (tempData[i] & 128) >> 7; //take MSb, shift it to LSb and put into newBit
+			size_t newBit = (tempData[i] & 128) >> 7; //take MSb, shift it to LSb and put into newBit
 			tempData[i] = tempData[i] << 1;
 			tempData[i] |= lastBit; //replace LSb with lastBit
 			lastBit = newBit;

@@ -13,7 +13,7 @@ void InfiNum::upSize(size_t minLen, bool copy, bool destruct)
 	if (minLen > this->capacity || (copy && destruct)) {
 		this->capacity += std::max((this->capacity+1)/2, minLen - this->capacity);
 	}
-	this->data = new uint8_t[this->capacity];
+	this->data = new size_t[this->capacity];
 	if (!copy) this->size = 0;
 	for (int i = 0; i < this->size; i++) {
 		this->data[i] = oldData[i];
@@ -22,11 +22,15 @@ void InfiNum::upSize(size_t minLen, bool copy, bool destruct)
 	if(destruct) delete[] oldData;
 }
 
+/**
+ * @brief new instance with prepared buffer filled with zeroes
+ * @param size how large should the reserved buffer be
+*/
 InfiNum::InfiNum(size_t size) //Default constructor, size constructor
 {
 	if (size < 2) size = 2;
 	this->capacity = size;
-	this->data = new uint8_t[size];
+	this->data = new size_t[size];
 	memset(this->data, 0, this->capacity);
 	this->size = 0;
 }
@@ -48,7 +52,7 @@ bool InfiNum::fromString(const char * input, uint8_t sustava)
 		}
 		if (c > sustava) return false;
 		this->mul(sustava);
-		this->add((uint8_t) c);
+		this->add((size_t) c);
 	}
 	return true;
 }
@@ -59,7 +63,7 @@ InfiNum::InfiNum(const InfiNum& src) //Copy constructor
 	this->data = src.data;
 	this->capacity = 0; //will be changed in upSize
 	this->size = src.size;
-	this->upSize(src.size, true, false); // will copy and resize without dedleting src data
+	this->upSize(src.size, true, false); // will copy and resize without deleting src data
 }
 
 InfiNum& InfiNum::operator=(const InfiNum& src) //Copy operator
@@ -100,9 +104,56 @@ InfiNum::~InfiNum()
 	if(this->data != nullptr) delete[] this->data;
 }
 
-InfiNum InfiNum::operator<<(uint8_t)
+InfiNum InfiNum::operator<<(const size_t a) const
 {
-	return InfiNum();
+	if (a == 0) return InfiNum(*this);
+	InfiNum res(size + a / bits + 1);
+	const size_t next = a / bits;
+	const uint8_t modShift = a % bits;
+
+	if (a % bits) {
+		res.data[size+next] = (this->data[size-1] & UINT64_MAX << shift) >> shift;
+		for (int i = size; i >= 0; i--) {
+			if (i == 0) {
+				res.data[i + next] = this->data[i] << modShift;
+				break;
+			}
+			const uint8_t shift = bits - modShift;
+			size_t nextBits = (this->data[i - 1] & UINT64_MAX << shift) >> shift;
+			res.data[i+next] = res.data[i] << modShift;
+			res.data[i+next] |= nextBits;
+		}
+	}
+	else
+		for (int i = size; i >= 0; i--)
+			res.data[i+next] = this->data[i];
+
+	return res;
+}
+
+InfiNum InfiNum::operator>>(const size_t a) const
+{
+	if (a / bits > size) return InfiNum();
+	else if (a == 0) return InfiNum(*this);
+	InfiNum res(size - a/bits);
+	const size_t next = a / bits;
+	const uint8_t modShift = a % bits;
+	if (a % bits) 
+		for (int i = 0; i + next <= size; i++) {
+			if (i + next == size) {
+				res.data[i] = this->data[i + next] >> modShift;
+				break;
+			}
+			const uint8_t shift = bits - modShift;
+			size_t nextBits = (this->data[i+next+1] & UINT64_MAX >> shift) << shift;
+			res.data[i] = res.data[i + next] >> modShift;
+			res.data[i] |= nextBits;
+		}
+	else 
+		for (int i = 0; i + next <= size; i++) 
+			res.data[i] = this->data[i + next];
+	
+	return res;
 }
 
 InfiNum InfiNum::operator/(InfiNum& a)

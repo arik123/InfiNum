@@ -17,6 +17,11 @@ InfiNum InfiNum::operator~() const
 
 InfiNum InfiNum::operator-() const
 {
+	if (this->data[this->size - 1] & 0x80) {
+		if(this->capacity <= this->size)
+			num.upSize();
+
+	}
 	InfiNum num(*this);
 	num.negate();
 	num.add(1);

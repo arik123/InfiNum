@@ -13,6 +13,6 @@ int main() {
 	a.mul((uint8_t*)&multiplier, 2);
 	b.fromString("100");
 
-	InfiNum num3 = num2 + a;
+	InfiNum num3 = b + a;
 	return 0;
 }
