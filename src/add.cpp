@@ -25,7 +25,7 @@ void InfiNum::add(size_t a, size_t i) {
 }
 
 void InfiNum::add(const size_t* const data, const size_t size, size_t start) {
-	for (int j = 0; j < size; j++) {
+	for (size_t j = 0; j < size; j++) {
 		this->add(data[j], start + j);
 	}
 }

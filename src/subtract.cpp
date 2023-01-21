@@ -20,8 +20,8 @@ InfiNum InfiNum::operator-() const
 	InfiNum num(*this);
 	if (num.zero) return num;
 	num.negate();
-	num.add(1);
 	num.negative = true;
+	num.add(1);
 	return num;
 }
 

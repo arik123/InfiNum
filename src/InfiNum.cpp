@@ -1,6 +1,7 @@
 #include "InfiNum.h"
 #include <iostream>
 #include <algorithm>
+#include <cstring>
 
 void InfiNum::upSize()
 {
@@ -15,32 +16,26 @@ void InfiNum::upSize(size_t minLen, bool copy, bool destruct)
 	}
 	this->data = new size_t[this->capacity];
 	if (!copy) this->size = 0;
-	for (int i = 0; i < this->size; i++) {
+	for (size_t i = 0; i < this->size; i++) {
 		this->data[i] = oldData[i];
 	}
-	memset(this->data + this->size, 0, this->capacity - this->size);
+	std::memset(this->data + this->size, this->negative ? 0xff : 0, this->capacity - this->size);
 	if(destruct) delete[] oldData;
 }
 
-/**
- * @brief new instance with prepared buffer filled with zeroes
- * @param size how large should the reserved buffer be
-*/
-InfiNum::InfiNum(size_t size) //Default constructor, size constructor
+InfiNum::InfiNum() //size constructor
 {
-	if (size < 2) size = 2;
+	size_t size = 2;
 	this->capacity = size;
 	this->data = new size_t[size];
-	memset(this->data, 0, this->capacity);
+	std::memset(this->data, 0, this->capacity);
 	this->size = 0;
 }
 
-bool InfiNum::fromString(const char * input, uint8_t sustava)
+InfiNum::InfiNum(const char * input, uint8_t base) : InfiNum()
 {
-	this->size = 0;
-	memset(this->data, 0, this->capacity);
-	for (char c; c = *input; input++) {
-		if (c < '0') return false;
+	for (char c; (c = *input); input++) { //Goes trough string until a char is \0
+		if (c < '0') continue;
 		else if (c > '9') {
 			if (c >= 'a') {
 				c = c - 'a' + 10;
@@ -50,11 +45,15 @@ bool InfiNum::fromString(const char * input, uint8_t sustava)
 		} else if (c >= '0') {
 			c = c - '0';
 		}
-		if (c > sustava) return false;
-		this->mul(sustava);
+		if (c > base) continue;
+		this->mul(base);
 		this->add((size_t) c);
 	}
-	return true;
+}
+
+std::string InfiNum::toString()
+{
+	return std::string();
 }
 
 InfiNum::InfiNum(const InfiNum& src) //Copy constructor
@@ -166,9 +165,4 @@ InfiNum InfiNum::operator>>(const size_t a) const
 			res.data[i] = this->data[i + next];
 	
 	return res;
-}
-
-InfiNum InfiNum::operator/(InfiNum& a)
-{
-	return InfiNum();
 }

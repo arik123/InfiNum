@@ -21,8 +21,8 @@ void InfiNum::mul(size_t a) {
 		a /= 2;
 		if (a == 0) break;
 		uint8_t lastBit = 0;
-		for (int i = 0; i <= oldSize; i++) {
-			size_t newBit = (tempData[i] & 1 << (bits - 1)) >> (bits-1); //take MSb, shift it to LSb and put into newBit
+		for (size_t i = 0; i <= oldSize; i++) {
+			size_t newBit = (tempData[i] & 1ULL << (bits - 1)) >> (bits-1); //take MSb, shift it to LSb and put into newBit
 			tempData[i] = tempData[i] << 1;
 			tempData[i] |= lastBit; //replace LSb with lastBit
 			lastBit = newBit;
@@ -42,7 +42,7 @@ void InfiNum::mul(const size_t* data, const size_t size) {
 
 	do {
 		bool notBreak = false;
-		for (int j = 0; j < size; j++) { // multiply on each bit with current shift
+		for (size_t j = 0; j < size; j++) { // multiply on each bit with current shift
 			if (inDataCopy[j] % 2) {
 				this->add(tempData, oldSize, j);
 			}
@@ -50,9 +50,9 @@ void InfiNum::mul(const size_t* data, const size_t size) {
 			if (inDataCopy[j] > 0) notBreak |= true;
 		}
 		if (!notBreak) break;
-		uint8_t lastBit = 0;
-		for (int i = 0; i <= oldSize; i++) {
-			size_t newBit = (tempData[i] & 1 << (bits - 1)) >> (bits - 1); //take MSb, shift it to LSb and put into newBit
+		size_t lastBit = 0;
+		for (size_t i = 0; i <= oldSize; i++) {
+			size_t newBit = (tempData[i] & 1ULL << (bits - 1)) >> (bits - 1); //take MSb, shift it to LSb and put into newBit
 			tempData[i] = tempData[i] << 1;
 			tempData[i] |= lastBit; //replace LSb with lastBit
 			lastBit = newBit;
@@ -70,7 +70,7 @@ InfiNum InfiNum::operator*(InfiNum& a)
 	return res;
 }
 
-InfiNum InfiNum::operator*(uint8_t a)
+InfiNum InfiNum::operator*(size_t a)
 {
 	InfiNum res(*this);
 	res.mul(a);
