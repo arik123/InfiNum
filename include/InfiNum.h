@@ -10,6 +10,8 @@ class InfiNum {
 	size_t * data;
 	size_t size;
 	size_t capacity;
+	bool negative = false;
+	bool zero = false;
 	void upSize();
 	void upSize(size_t minLen, bool copy=true, bool destructData = true);
 	void negate();
