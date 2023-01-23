@@ -10,26 +10,58 @@ void InfiNum::upSize()
 
 void InfiNum::upSize(size_t minLen, bool copy, bool destruct)
 {
-	auto oldData = this->data;
-	if (minLen > this->capacity || (copy && destruct)) {
-		this->capacity += std::max((this->capacity+1)/2, minLen - this->capacity);
+	auto oldData = data;
+	if (minLen > capacity || (copy && destruct)) {
+		capacity += std::max((capacity+1)/2, minLen - capacity);
 	}
-	this->data = new size_t[this->capacity];
-	if (!copy) this->size = 0;
-	for (size_t i = 0; i < this->size; i++) {
-		this->data[i] = oldData[i];
+	data = new size_t[capacity];
+	if (!copy) size = 0;
+	for (size_t i = 0; i < size; i++) {
+		data[i] = oldData[i];
 	}
-	std::memset(this->data + this->size, this->negative ? 0xff : 0, this->capacity - this->size);
+	std::memset(data + size, negative ? 0xff : 0, capacity - size);
 	if(destruct) delete[] oldData;
 }
 
-InfiNum::InfiNum() //size constructor
+void InfiNum::cleanSize()
 {
-	size_t size = 2;
-	this->capacity = size;
-	this->data = new size_t[size];
-	std::memset(this->data, 0, this->capacity);
-	this->size = 0;
+	size_t* end = data + size;
+	bool clean;
+	do {
+		clean = *(--end) == negative ? SIZE_MAX : 0;
+	} while (clean && end > data);
+
+	const size_t size = end - data + clean ? 0 : 1;
+	this->size = size;
+
+	if (size > capacity / 2) {
+		capacity = std::max(2ULL, size);
+		size_t* oldData = data;
+		data = new size_t[capacity];
+		std::memset(data, 0, capacity);
+		for (size_t i = 0; i < size; i++) {
+			data[i] = oldData[i];
+		}
+		delete[] oldData;
+	}
+
+}
+InfiNum::InfiNum()
+{
+	capacity = 2;
+	data = new size_t[capacity];
+	std::memset(data, 0, capacity);
+	size = 0;
+}
+
+InfiNum::InfiNum(int64_t num)
+{
+	capacity = 2;
+	data = new size_t[capacity];
+	data[0] = num;
+	if (num < 0) negative = true;
+	data[1] = negative ? SIZE_MAX : 0;
+	size = 1;
 }
 
 InfiNum::InfiNum(const char * input, uint8_t base) : InfiNum()
@@ -46,12 +78,12 @@ InfiNum::InfiNum(const char * input, uint8_t base) : InfiNum()
 			c = c - '0';
 		}
 		if (c > base) continue;
-		this->mul(base);
-		this->add((size_t) c);
+		this->operator*=(base);
+		this->operator+=((size_t) c);
 	}
 }
 
-std::string InfiNum::toString()
+std::string InfiNum::toString(uint8_t) const
 {
 	return std::string();
 }

@@ -1,36 +1,30 @@
 #include "InfiNum.h"
 
-
-void InfiNum::negate()
-{
-	for (size_t i = 0; i < this->size; i++) {
-		this->data[i] = ~this->data[i];
-	}
-}
-
 InfiNum InfiNum::operator~() const
 {
 	InfiNum num(*this);
-	num.negate();
+	for (size_t i = 0; i <  num.size; i++) {
+		num.data[i] = ~num.data[i];
+	}
+	num.negative = !negative;
 	return num;
 }
 
 InfiNum InfiNum::operator-() const
 {
-	InfiNum num(*this);
-	if (num.zero) return num;
-	num.negate();
-	num.negative = true;
-	num.add(1);
+	InfiNum num = -(*this);//should result in a move
+	num += 1;
 	return num;
 }
 
-InfiNum InfiNum::operator-(InfiNum& a)
+InfiNum& InfiNum::operator-=(const InfiNum& a)
 {
-	InfiNum num(a);
-	num.negate();
-	num.add(1);
-	num.negative = true;
-	num.add(this->data, this->size);
-	return num;
+	this->operator+=(-a);
+	return *this;
+}
+
+InfiNum operator-(InfiNum a, const InfiNum& b)
+{
+	a -= b;
+	return InfiNum();
 }

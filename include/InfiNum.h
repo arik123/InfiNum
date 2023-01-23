@@ -14,17 +14,16 @@ class InfiNum {
 	size_t size;
 	size_t capacity;
 	bool negative = false;
-	bool zero = false;
 	void upSize();
 	void upSize(size_t minLen, bool copy=true, bool destructData = true);
-	void negate();
+	void cleanSize();
 
 public:
 	//Constructors
 	/**
 	 * @brief Default constructor
 	*/
-	InfiNum() {};
+	InfiNum();
 
 	/**
 	 * @brief Converting constructor
@@ -54,20 +53,22 @@ public:
 
 	~InfiNum();
 
-	std::string toString(uint8_t base);
+	std::string toString(uint8_t base = 10) const;
 	friend std::ostream& operator<<(std::ostream& os, const InfiNum& obj);
 
 	friend std::istream& operator>>(std::istream& is, InfiNum& obj);
-
+/*
 	void add(size_t a, size_t start = 0);
 	void add(const size_t* data, const size_t size, size_t start = 0);
 
 	void mul(size_t a);
 	void mul(const size_t* data, const size_t size);
-
+	*/
 	//Arithmetic ops
 	InfiNum& operator+=(const InfiNum& a);
 	friend InfiNum operator+(InfiNum a, const InfiNum& b);
+
+	InfiNum operator-() const;
 
 	InfiNum& operator-=(const InfiNum& a);
 	friend InfiNum operator-(InfiNum a, const InfiNum& b);
@@ -83,7 +84,6 @@ public:
 	InfiNum& operator--(); // prefix decrement
 	InfiNum& operator--(int); // postfix decrement
 
-	InfiNum operator-(const InfiNum& a);
 
 
 	//InfiNum operator+(size_t a);

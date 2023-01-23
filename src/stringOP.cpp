@@ -36,5 +36,5 @@ std::istream& operator>>(std::istream& is, InfiNum& obj) {
 		else obj *= (base);
 		obj += c;
 	}
-	return os;
+	return is;
 }

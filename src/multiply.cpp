@@ -62,7 +62,7 @@ void InfiNum::mul(const size_t* data, const size_t size) {
 	delete[] inDataCopy;
 	delete[] tempData;
 }
-
+/*
 InfiNum InfiNum::operator*(InfiNum& a)
 {
 	InfiNum res(*this);
@@ -76,3 +76,4 @@ InfiNum InfiNum::operator*(size_t a)
 	res.mul(a);
 	return res;
 }
+*/
