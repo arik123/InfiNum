@@ -63,42 +63,6 @@ void InfiNum::mul(const size_t* data, const size_t size) {
 	delete[] tempData;
 }
 
-#define HAVE_FAST_mul64 1
-
-#ifdef __SIZEOF_INT128__     // GNU C
-static inline
-uint64_t mulhi64(uint64_t a, uint64_t b) {
-	unsigned __int128 prod = a * (unsigned __int128)b;
-	return prod >> 64;
-}
-
-#elif defined(_M_X64) || defined(_M_ARM64)     // MSVC
-// MSVC for x86-64 or AArch64
-// possibly also  || defined(_M_IA64) || defined(_WIN64)
-// but the docs only guarantee x86-64!  Don't use *just* _WIN64; it doesn't include AArch64 Android / Linux
-
-// https://learn.microsoft.com/en-gb/cpp/intrinsics/umulh
-#include <intrin.h>
-#define mulhi64 __umulh
-
-#elif defined(_M_IA64) // || defined(_M_ARM)       // MSVC again
-// https://learn.microsoft.com/en-gb/cpp/intrinsics/umul128
-// incorrectly say that _umul128 is available for ARM
-// which would be weird because there's no single insn on AArch32
-#include <intrin.h>
-static inline
-uint64_t mulhi64(uint64_t a, uint64_t b) {
-	unsigned __int64 HighProduct;
-	(void)_umul128(a, b, &HighProduct);
-	return HighProduct;
-}
-
-#else
-
-# undef HAVE_FAST_mul64
-uint64_t mulhi64(uint64_t a, uint64_t b);  // non-inline prototype
-// or you might want to define @craigster0's version here so it can inline.
-#endif
 
 void InfiNum::mul(const size_t* A, const size_t* B,
 	size_t startA, size_t endA, size_t startB, size_t endB,
@@ -106,7 +70,25 @@ void InfiNum::mul(const size_t* A, const size_t* B,
 {
 	size_t k = (endA - startA) >> 1;
 	bool odd = (endA - startA) & 1;
-	if (tmp) {
+	if (startA == endA && startB == endB) {
+		const size_t a = A[endA] >> bits / 2;
+		const size_t b = (A[endA] << bits / 2) >> bits / 2;
+
+		const size_t c = B[endB] >> bits / 2;
+		const size_t d = (B[endB] << bits / 2) >> bits / 2;
+
+		size_t R = (a + b) * (c + d);
+
+		size_t L = b * d;
+		size_t H = a * c;
+		R -= L;
+		R -= H;
+
+		if (tmp) O = T;
+		O[outOffset] = L + (R << bits / 2);
+		uint8_t carry = (O[outOffset] < L) ? 1 : 0; //Overflow -> carry
+		O[outOffset + 1] = H + (R >> bits / 2) + carry;
+	} else if (tmp) {
 		const size_t tempBase = startA * 4;
 		const size_t tempOffset = tempBase + (endB - startA) * 2;
 		//X = A+B
