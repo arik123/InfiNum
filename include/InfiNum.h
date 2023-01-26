@@ -17,6 +17,15 @@ class InfiNum {
 	void upSize();
 	void upSize(size_t minLen, bool copy=true, bool destructData = true);
 	void cleanSize();
+	static void add(const size_t* A, const size_t* B,
+		size_t startA, size_t endA, size_t startB, size_t endB,
+		size_t* O, size_t offset);
+	static void sub(const size_t* A, const size_t* B,
+		size_t startA, size_t endA, size_t startB, size_t endB,
+		size_t* O, size_t offset);
+	static void mul(const size_t* A, const size_t* B,
+		size_t startA, size_t endA, size_t startB, size_t endB,
+		size_t* O, size_t*T, bool tmp, size_t outOffset);
 
 public:
 	//Constructors
@@ -79,6 +88,9 @@ public:
 	InfiNum& operator/=(const InfiNum& a);
 	friend InfiNum operator/(InfiNum a, const InfiNum& b);
 
+	InfiNum& operator%=(const InfiNum& a);
+	friend InfiNum operator%(InfiNum a, const InfiNum& b);
+
 	InfiNum& operator++(); // prefix increment
 	InfiNum& operator++(int); // postfix increment
 	InfiNum& operator--(); // prefix decrement
@@ -105,8 +117,11 @@ public:
 	InfiNum& operator&=(const InfiNum& a);
 	friend InfiNum operator&(InfiNum a, const InfiNum& b);
 
+
+	InfiNum& operator<<=(const InfiNum& a);
 	InfiNum operator<<(const size_t a) const;//binary shift
 
+	InfiNum& operator>>=(const InfiNum& a);
 	InfiNum operator>>(const size_t a) const;//binary shift
 
 	//TODO: stream extraction
