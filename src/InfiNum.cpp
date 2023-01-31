@@ -31,11 +31,11 @@ void InfiNum::cleanSize()
 		clean = *(--end) == negative ? SIZE_MAX : 0;
 	} while (clean && end > data);
 
-	const size_t size = end - data + clean ? 0 : 1;
+	const size_t size = end - data + (clean ? 0 : 1);
 	this->size = size;
 
 	if (size > capacity / 2) {
-		capacity = std::max(2ULL, size);
+		capacity = std::max((size_t)2, size);
 		size_t* oldData = data;
 		data = new size_t[capacity];
 		std::memset(data, 0, capacity);

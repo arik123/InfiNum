@@ -12,7 +12,7 @@ InfiNum InfiNum::operator~() const
 
 InfiNum InfiNum::operator-() const
 {
-	InfiNum num = -(*this);//should result in a move
+	InfiNum num = ~(*this);//should result in a move
 	num += 1;
 	return num;
 }
@@ -26,5 +26,5 @@ InfiNum& InfiNum::operator-=(const InfiNum& a)
 InfiNum operator-(InfiNum a, const InfiNum& b)
 {
 	a -= b;
-	return InfiNum();
+	return a;
 }

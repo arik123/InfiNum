@@ -20,12 +20,39 @@ class InfiNum {
 	static void add(const size_t* A, const size_t* B,
 		size_t startA, size_t endA, size_t startB, size_t endB,
 		size_t* O, size_t offset);
+
+	/**
+	 * @brief Subtracts B from A, A must be longer or equal to B
+	 * @param A 
+	 * @param B 
+	 * @param startA 
+	 * @param endA end is after
+	 * @param startB
+	 * @param endB end is after
+	 * @param O 
+	 * @param offset 
+	*/
 	static void sub(const size_t* A, const size_t* B,
 		size_t startA, size_t endA, size_t startB, size_t endB,
 		size_t* O, size_t offset);
+
+	/**
+	 * @brief Multiplies two input arrays into an output array
+	 * @param A input A ptr
+	 * @param B input B ptr
+	 * @param startA offset to start from
+	 * @param endA offset to end with, end is after last
+	 * @param startB offset to start from
+	 * @param endB offset to end with, end is after last
+	 * @param O output Array, should be allocated to 2x length of input
+	 * @param T temporary helper array (used as a stack), alocated to 2x thength of input
+	 * @param startO start offset in output
+	 * @param top stack top
+	 * @param SP stack pointer
+	*/
 	static void mul(const size_t* A, const size_t* B,
 		size_t startA, size_t endA, size_t startB, size_t endB,
-		size_t* O, size_t*T, bool tmp, size_t outOffset);
+		size_t* O, size_t* T, size_t startO, size_t SP);
 
 public:
 	//Constructors
